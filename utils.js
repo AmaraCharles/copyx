@@ -62,86 +62,85 @@ const sendRequestToUser = async ({ subject,email,message }) =>{
     from: `${process.env.EMAIL_USER}`, // sender address
     to: email, // list of receivers
     subject: subject, // Subject line
-    // text: "Hello ?", // plain text body
-    html:`  <html>
-      <head>
-        <style>
-          .email-container {
-            font-family: Arial, sans-serif;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
-          }
-          .header {
-            background-color: #f3f4f6;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-          }
-          .header img {
-            max-width: 50px;
-            margin-bottom: 10px;
-          }
-          .header .puncture {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-          }
-          .content {
-            padding: 20px;
-          }
-          .button {
-            display: inline-block;
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            margin: 20px 0;
-            font-size: 16px;
-          }
-          .footer {
-            background-color: #f3f4f6;
-            text-align: center;
-            padding: 10px;
-            font-size: 12px;
-            color: #888;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="email-container">
-          <div class="header">
-            <img src="cid:logo" alt="copyprofitx Logo">
-            
+    html: `  
+      <html>
+        <head>
+          <style>
+            .email-container {
+              font-family: Arial, sans-serif;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+              overflow: hidden;
+            }
+            .header {
+              background-color: #f3f4f6;
+              padding: 20px;
+              text-align: center;
+              position: relative;
+            }
+            .header img {
+              max-width: 50px;
+              margin-bottom: 10px;
+            }
+            .header .puncture {
+              position: absolute;
+              top: 0;
+              right: 0;
+              width: 100px;
+            }
+            .content {
+              padding: 20px;
+            }
+            .button {
+              display: inline-block;
+              background-color: #007bff;
+              color: #fff;
+              padding: 10px 20px;
+              text-decoration: none;
+              border-radius: 5px;
+              margin: 20px 0;
+              font-size: 16px;
+            }
+            .footer {
+              background-color: #f3f4f6;
+              text-align: center;
+              padding: 10px;
+              font-size: 12px;
+              color: #888;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <img src="cid:logo" alt="copyprofitx Logo">
+            </div>
+            <div class="content">
+              ${message}
+            </div>
           </div>
-          <div class="content">
-          ${message}
-        </div>
-      </body>
+        </body>
       </html>
     `,
     attachments: [
       {
         filename: 'logo.png', // Replace with your logo filename
         path: './logo.png', // Local logo path
-        cid: 'logo', // This ID matches the 'cid' used in the HTML
+        cid: 'logo', // Unique CID for the logo
       },
       {
-        filename: 'logo.png', // Replace with your puncture image filename
-        path: './logo.png', // Local puncture image path
-        cid: 'logo', // This ID matches the 'cid' used in the HTML
+        filename: 'puncture.png', // Replace with your puncture image filename
+        path: './puncture.png', // Local puncture image path
+        cid: 'puncture', // Unique CID for the puncture image
       },
     ],
-  });;
+  });
+  
   console.log("Message sent: %s", info.messageId);
-  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-}
-
+  
 
 const sendWithdrawalRequestEmail = async ({  from, amount, method,address }) => {
   
