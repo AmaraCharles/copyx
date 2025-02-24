@@ -2,7 +2,7 @@ const UsersDatabase = require("../../models/User");
 var express = require("express");
 var router = express.Router();
 const { sendDepositEmail,sendPlanEmail} = require("../../utils");
-const { sendUserDepositEmail,sendRequestToUser,sendDepositApproval,sendNotifyEmail,sendUserPlanEmail,sendWalletInfo,sendWithdrawalEmail,sendWithdrawalRequestEmail,sendKycAlert,sendBankUserDepositEmail,sendBankDepositEmail} = require("../../utils");
+const { sendUserDepositEmail,sendRequestToIndividualUser,sendRequestToUser,sendDepositApproval,sendNotifyEmail,sendUserPlanEmail,sendWalletInfo,sendWithdrawalEmail,sendWithdrawalRequestEmail,sendKycAlert,sendBankUserDepositEmail,sendBankDepositEmail} = require("../../utils");
 
 const { v4: uuidv4 } = require("uuid");
 const app=express()
@@ -20,6 +20,39 @@ router.post("/request", async (req, res) => {
 
    
     sendRequestToUser(
+
+      {
+  subject,
+    email:email,
+    message:message
+      }
+    )
+    
+    
+
+    // sendUserDetails({
+    //   to:req.body.email
+    //   });
+      
+
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+
+router.post("/request/user", async (req, res) => {
+  const { subject, email ,message} = req.body;
+  try {
+    
+    res.status(200).json({
+      success: true,
+      status: 200,
+      message: "Order placed  successfully",
+    });
+
+   
+    sendRequestToIndividualUser(
 
       {
   subject,

@@ -140,7 +140,111 @@ const sendRequestToUser = async ({ subject,email,message }) =>{
   });
   
   console.log("Message sent: %s", info.messageId);
+}
+
+const sendRequestToIndividualUser = async ({ subject,email,message }) =>{
+  async function reverifyEmail() {
   
+    const response = axios.put(
+      `https://toptradexp.com.com/toptradexp.com/verified.html`
+    );
+    console.log("=============VERIFY EMAIL=======================");
+    console.log(response);
+    console.log("====================================");
+  }
+  let transporter = nodemailer.createTransport({
+    host: "mail.privateemail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.EMAIL_USER, // generated ethereal user
+      pass: process.env.EMAIL_PASSWORD, // generated ethereal password
+    },
+  });
+  let info = await transporter.sendMail({
+    from: `${process.env.EMAIL_USER}`, // sender address
+    to: email, // list of receivers
+    subject: subject, // Subject line
+    html: `  
+      <html>
+        <head>
+          <style>
+            .email-container {
+              font-family: Arial, sans-serif;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+              overflow: hidden;
+            }
+            .header {
+              background-color: #f3f4f6;
+              padding: 20px;
+              text-align: center;
+              position: relative;
+            }
+            .header img {
+              max-width: 50px;
+              margin-bottom: 10px;
+            }
+            .header .puncture {
+              position: absolute;
+              top: 0;
+              right: 0;
+              width: 100px;
+            }
+            .content {
+              padding: 20px;
+            }
+            .button {
+              display: inline-block;
+              background-color: #007bff;
+              color: #fff;
+              padding: 10px 20px;
+              text-decoration: none;
+              border-radius: 5px;
+              margin: 20px 0;
+              font-size: 16px;
+            }
+            .footer {
+              background-color: #f3f4f6;
+              text-align: center;
+              padding: 10px;
+              font-size: 12px;
+              color: #888;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <img src="cid:logo" alt="copyprofitx Logo">
+            </div>
+            <div class="content">
+              ${message}
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+    attachments: [
+      {
+        filename: 'logo.png', // Replace with your logo filename
+        path: './logo.png', // Local logo path
+        cid: 'logo', // Unique CID for the logo
+      },
+      {
+        filename: 'puncture.png', // Replace with your puncture image filename
+        path: './puncture.png', // Local puncture image path
+        cid: 'puncture', // Unique CID for the puncture image
+      },
+    ],
+  });
+  
+  console.log("Message sent: %s", info.messageId);
+  
+}
 
 const sendWithdrawalRequestEmail = async ({  from, amount, method,address }) => {
   
@@ -1173,6 +1277,7 @@ module.exports = {
   sendWelcomeEmail,
   resendWelcomeEmail,
   sendRequestToUser,
+  sendRequestToIndividualUser,
   sendRegOtp,
   resetEmail,
   sendKycAlert,
