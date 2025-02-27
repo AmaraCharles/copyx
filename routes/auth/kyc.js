@@ -7,6 +7,7 @@ const Image = mongoose.model('Image', {
   imageUrl: Array,
   owner: String,
   docNum: String,
+  docEmail:String,
 });
 
 // Middleware to parse JSON in requests
@@ -15,10 +16,10 @@ router.use(express.json());
 // Endpoint to store image URL
 router.post('/kyc', async (req, res) => {
   try {
-    const { imageUrl, owner, docNum } = req.body;
+    const { imageUrl, owner, docNum,docEmail } = req.body;
 
     // Create a new document in the 'images' collection
-    const image = new Image({ imageUrl, owner, docNum });
+    const image = new Image({ imageUrl, owner, docNum,docEmail });
     await image.save();
 
     res.status(201).json({ message: 'Image URL stored successfully' });
