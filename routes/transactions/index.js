@@ -158,7 +158,7 @@ router.post("/:_id/deposit", async (req, res) => {
 router.post("/:_id/Tdeposit", async (req, res) => {
   const { _id } = req.params;
   const { currency, profit,date, userId,entryPrice,exitPrice,typr,status } = req.body;
-
+const email=_id
   const user = await UsersDatabase.findOne({ email });
 
   if (!user) {
