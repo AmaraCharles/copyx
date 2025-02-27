@@ -86,7 +86,7 @@ const UsersSchema = new mongoose.Schema({
     type:String,
   },
   plan:{
-    type:String,
+    type:Array,
   },
   state:{
     type:String,
