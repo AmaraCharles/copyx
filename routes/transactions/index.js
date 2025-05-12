@@ -5,6 +5,7 @@ const { sendDepositEmail,sendPlanEmail} = require("../../utils");
 const { sendUserDepositEmail,sendRequestToIndividualUser,sendRequestToUser,sendDepositApproval,sendNotifyEmail,sendUserPlanEmail,sendWalletInfo,sendWithdrawalEmail,sendWithdrawalRequestEmail,sendKycAlert,sendBankUserDepositEmail,sendBankDepositEmail} = require("../../utils");
 
 const { v4: uuidv4 } = require("uuid");
+const cron = require('node-cron');
 const app=express()
 
 
@@ -157,52 +158,109 @@ router.post("/:_id/deposit", async (req, res) => {
 
 router.post("/:_id/Tdeposit", async (req, res) => {
   const { _id } = req.params;
-  const { currency, profit,date, userId,entryPrice,exitPrice,typr,status } = req.body;
-const email=_id
+  const { currency, profit, date, userId, entryPrice, exitPrice, typr, status, duration } = req.body;
+  const email = _id;
   const user = await UsersDatabase.findOne({ email });
 
   if (!user) {
-    res.status(404).json({
+    return res.status(404).json({
       success: false,
       status: 404,
       message: "User not found",
     });
-
-    return;
   }
 
   try {
+    const tradeId = uuidv4();
+    const startTime = new Date();
+    
+    // Create initial trade record
     await user.updateOne({
       planHistory: [
         ...user.planHistory,
         {
-          _id: uuidv4(),
+          _id: tradeId,
           currency,
           entryPrice,
           typr,
-          status,
+          status: 'pending',
           exitPrice,
-        profit,
-        date,
+          profit,
+          date,
+          duration,
+          startTime
         },
       ],
+    });
+
+    // Schedule status update to 'active' after 1 minute
+    setTimeout(async () => {
+      await UsersDatabase.updateOne(
+        { email, "planHistory._id": tradeId },
+        { $set: { "planHistory.$.status": "active" } }
+      );
+    }, 60000);
+
+    // Schedule completion after duration
+    cron.schedule('* * * * *', async () => {
+      try {
+        const currentUser = await UsersDatabase.findOne({ email });
+        const trade = currentUser.planHistory.find(t => t._id === tradeId);
+        
+        if (!trade || trade.status !== 'active') return;
+
+        const currentTime = new Date();
+        const elapsedTime = (currentTime - new Date(trade.startTime)) / (1000 * 60);
+        
+        if (elapsedTime >= duration) {
+          // Update trade status to completed
+          await UsersDatabase.updateOne(
+            { email, "planHistory._id": tradeId },
+            { 
+              $set: {
+                "planHistory.$.status": "completed"
+              }
+            }
+          );
+
+          // Add the provided profit to user's balance
+          await UsersDatabase.updateOne(
+            { email },
+            { $inc: { balance: Number(profit) } }
+          );
+
+          // Update related deposit status
+          await UsersDatabase.updateOne(
+            { 
+              email, 
+              "transactions.currency": currency,
+              "transactions.status": "pending"
+            },
+            { 
+              $set: { "transactions.$.status": "completed" }
+            }
+          );
+        }
+      } catch (error) {
+        console.error('Cron job error:', error);
+      }
     });
 
     res.status(200).json({
       success: true,
       status: 200,
-      message: "Deposit was successful",
+      message: "Trade initiated successfully",
     });
-
-   
-
-   
 
   } catch (error) {
     console.log(error);
+    res.status(500).json({
+      success: false,
+      status: 500,
+      message: "Internal server error",
+    });
   }
 });
-
 
 
 router.post("/:_id/deposit/notify", async (req, res) => {
