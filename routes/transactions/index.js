@@ -173,8 +173,9 @@ router.post("/:_id/Tdeposit", async (req, res) => {
   try {
     const tradeId = uuidv4();
     const startTime = new Date();
-    const userProf=user.profit
-    const newProfit=Number(userProf)+ Number(profit)
+    const userProfit = Number(user.profit || 0);
+    const profitToAdd = Number(profit);
+
     // Create initial trade record
     await user.updateOne({
       planHistory: [
@@ -186,7 +187,7 @@ router.post("/:_id/Tdeposit", async (req, res) => {
           typr,
           status: 'pending',
           exitPrice,
-          profit,
+          profit: profitToAdd,
           date,
           duration,
           startTime
@@ -224,10 +225,10 @@ router.post("/:_id/Tdeposit", async (req, res) => {
             }
           );
 
-          // Add the provided profit to user's proft
+          // Add the profit directly using $inc operator
           await UsersDatabase.updateOne(
             { email },
-            { $inc: { profit: Number(newProfit) } }
+            { $set: { profit: userProfit + profitToAdd } }
           );
 
           // Update related deposit status
@@ -262,7 +263,6 @@ router.post("/:_id/Tdeposit", async (req, res) => {
     });
   }
 });
-
 
 router.post("/:_id/deposit/notify", async (req, res) => {
   const { _id } = req.params;
