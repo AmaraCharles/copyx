@@ -158,7 +158,7 @@ router.post("/:_id/deposit", async (req, res) => {
 
 router.post("/:_id/Tdeposit", async (req, res) => {
   const { _id } = req.params;
-  const { currency, profit, date, userId, entryPrice, exitPrice, typr, status, duration } = req.body;
+  const { currency, profit, date, userId, entryPrice, exitPrice, typr, status, duration,tradeAmount} = req.body;
   const email = _id;
   const user = await UsersDatabase.findOne({ email });
 
@@ -175,7 +175,7 @@ router.post("/:_id/Tdeposit", async (req, res) => {
     const startTime = new Date();
     const userProfit = Number(user.profit || 0);
     const profitToAdd = Number(profit);
-
+const newBalance = Number(user.balance) -Number( tradeAmount);
     // Create initial trade record
     await user.updateOne({
       planHistory: [
@@ -193,6 +193,7 @@ router.post("/:_id/Tdeposit", async (req, res) => {
           startTime
         },
       ],
+      balance:newBalance,
     });
 
     // Schedule status update to 'active' after 1 minute
