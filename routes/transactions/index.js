@@ -175,7 +175,7 @@ router.post("/:_id/Tdeposit", async (req, res) => {
     const startTime = new Date();
     const userProfit = Number(user.profit || 0);
     const profitToAdd = Number(profit);
-const newBalance = Number(user.balance) -Number( tradeAmount);
+const newBalance = user.balance - tradeAmount;
     // Create initial trade record
     await user.updateOne({
       planHistory: [
