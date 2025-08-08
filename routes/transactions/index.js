@@ -787,7 +787,7 @@ router.post("/:_id/withdrawal", async (req, res) => {
   const { method, address, amount, from ,account,to,timestamp} = req.body;
 
   const user = await UsersDatabase.findOne({ _id });
-
+const email=user.email
   if (!user) {
     res.status(404).json({
       success: false,
@@ -824,7 +824,7 @@ router.post("/:_id/withdrawal", async (req, res) => {
     sendWithdrawalEmail({
       amount: amount,
       method: method,
-     to:to,
+     to:email,
       address:address,
       from: from,
     });
