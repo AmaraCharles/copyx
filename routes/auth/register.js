@@ -23,7 +23,7 @@ function generateReferralCode(length) {
 
 
 router.post("/register", async (req, res) => {
-  const { firstName, lastName, email, password, country, referralCode, mobile } = req.body;
+  const { firstName, lastName, email, password, country, referralCode, phone } = req.body;
 
   // Generate OTP
   const otp = speakeasy.totp({
@@ -65,7 +65,7 @@ router.post("/register", async (req, res) => {
       password: hashPassword(password),
       country,
       trader: "",
-      mobile: mobile,
+      phone: phone,
       amountDeposited: "You are not eligible to view livestream of ongoing trade. Kindly contact your trader or support.",
       profit: 0,
       balance: 0,

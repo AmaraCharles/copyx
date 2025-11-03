@@ -45,6 +45,10 @@ const UsersSchema = new mongoose.Schema({
     type: String,
     
   },
+  phone: {
+    type: String,
+    
+  },
   trader: {
     type: String,
     
